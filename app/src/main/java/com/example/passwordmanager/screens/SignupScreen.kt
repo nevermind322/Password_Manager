@@ -24,12 +24,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.passwordmanager.CryptoManager
 import com.example.passwordmanager.vm.SignupUIState
 import com.example.passwordmanager.vm.SignupViewModel
 
 @Composable
 fun SignupScreen(
-    prefs: SharedPreferences,
     onSignup: () -> Unit,
     vm: SignupViewModel = viewModel()
 ) {
@@ -42,15 +42,17 @@ fun SignupScreen(
         mutableStateOf(true)
     }
 
-    val context = LocalContext.current
+    val context = LocalContext.current.applicationContext
     val state by vm.state.collectAsState()
 
     LaunchedEffect(state) {
         if (state is SignupUIState.PasswordNotValid) {
             Toast.makeText(context, "Password is not valid", Toast.LENGTH_SHORT).show()
             vm.notValidPasswordMessageShown()
-        } else if (state is SignupUIState.Success)
+        } else if (state is SignupUIState.Success) {
+            Toast.makeText(context, "Successfully created password", Toast.LENGTH_LONG).show()
             onSignup()
+        }
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -66,7 +68,7 @@ fun SignupScreen(
                 )
             }
         )
-        Button(onClick = { vm.createMasterPassword(password, prefs) }) {
+        Button(onClick = { vm.createMasterPassword(password, context) }) {
             Text("Create password")
         }
         Text(text = "State - $state")

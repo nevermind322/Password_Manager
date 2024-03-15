@@ -6,8 +6,10 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
+import com.example.passwordmanager.vm.PASSWORD_HASH_KEY
 import java.io.InputStream
 import java.io.OutputStream
 import java.security.KeyStore
@@ -19,6 +21,8 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 private const val PREFS_FILENAME = "prefs"
+private const val HASH_FILENAME = "hash_prefs"
+
 
 object CryptoManager {
 
@@ -48,6 +52,18 @@ object CryptoManager {
         return with(digest) {
             update(byteArray)
             digest()
+        }
+    }
+
+    fun getPasswordHash(context: Context): String? {
+        val prefs = context.getSharedPreferences(HASH_FILENAME, Context.MODE_PRIVATE)
+        return prefs.getString(PASSWORD_HASH_KEY, null)
+    }
+
+    fun createPasswordHash(context: Context, password: String) {
+        val prefs = context.getSharedPreferences(HASH_FILENAME, Context.MODE_PRIVATE)
+        prefs.edit {
+            putString(PASSWORD_HASH_KEY, sha256(password.encodeToByteArray()).decodeToString())
         }
     }
 
