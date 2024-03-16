@@ -85,10 +85,12 @@ fun App() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(navController: NavHostController) {
+    val backStackEntry by navController.currentBackStackEntryAsState()
     TopAppBar(title = { Text(text = "Password Manager") }, navigationIcon = {
-        Icon(imageVector = Icons.Default.ArrowBack,
-            contentDescription = "return back",
-            modifier = Modifier.clickable { navController.navigateUp() })
+        if (backStackEntry?.destination?.route != SITES_LIST_ROUTE)
+            Icon(imageVector = Icons.Default.ArrowBack,
+                contentDescription = "return back",
+                modifier = Modifier.clickable { navController.navigateUp() })
     })
 }
 
@@ -106,7 +108,8 @@ fun MainNavHost(
         navController = navController, startDestination = SITES_LIST_ROUTE, modifier = modifier
     ) {
         composable(
-            "$ADD_SITE_ROUTE?$ADD_SITE_PARAM={$ADD_SITE_PARAM}", arguments = listOf(navArgument(ADD_SITE_PARAM) {
+            "$ADD_SITE_ROUTE?$ADD_SITE_PARAM={$ADD_SITE_PARAM}",
+            arguments = listOf(navArgument(ADD_SITE_PARAM) {
                 nullable = true
                 type = NavType.StringType
             })
