@@ -39,17 +39,23 @@ fun SitesListScreen(
 
     val state by vm.state.collectAsState()
     LaunchedEffect(Unit) { vm.getSites(prefs) }
-    Column (modifier = Modifier.padding(horizontal = 4.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 4.dp)) {
         when (state) {
             is SitesListUIState.Error -> Text(text = (state as SitesListUIState.Error).msg)
             SitesListUIState.Loading -> CircularProgressIndicator()
-            is SitesListUIState.Success -> LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                items((state as SitesListUIState.Success).data) {
-                    Site(
-                        it,
-                        onEdit = { onEdit(it.site) },
-                        onDelete = { vm.deleteSite(it.site, prefs) })
-                }
+            is SitesListUIState.Success -> {
+                val data = (state as SitesListUIState.Success).data
+                if (data.isEmpty())
+                    Text(text = "To add site press plus button")
+                else
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(data) {
+                            Site(
+                                it,
+                                onEdit = { onEdit(it.site) },
+                                onDelete = { vm.deleteSite(it.site, prefs) })
+                        }
+                    }
             }
         }
     }
