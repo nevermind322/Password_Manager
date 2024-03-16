@@ -47,6 +47,7 @@ fun LoginScreen(onLogin: () -> Unit) {
                         if (hash == getHashString(password))
                             onLogin()
                     }) { Text(text = "Login") }
+
                     BiometricAuthButton(
                         onError = { _, _ ->
                             Toast.makeText(
@@ -77,11 +78,14 @@ fun BiometricAuthButton(
     modifier: Modifier = Modifier
 ) {
 
+
     val activity = LocalContext.current as FragmentActivity
     val biometrics = Biometrics(activity)
+    if (!biometrics.canAuthenticate())
+        return
     val biometricPrompt = biometrics.getPrompt(onError, onSuccess, onFail)
 
-    val promptInfo = BiometricPrompt.PromptInfo.Builder().setTitle("Biometric login for my app")
+    val promptInfo = BiometricPrompt.PromptInfo.Builder().setTitle("Biometric login")
         .setSubtitle("Log in using your biometric credential")
         .setNegativeButtonText("Use account password").build()
 
