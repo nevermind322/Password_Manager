@@ -12,5 +12,8 @@ class PasswordManagerApp : Application(), ImageLoaderFactory {
                 .directory(cacheDir.resolve("image_cache"))
                 .maxSizePercent(0.02)
                 .build()        }
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.placeholder)
+            .fallback(R.drawable.placeholder)
             .build()
 }
