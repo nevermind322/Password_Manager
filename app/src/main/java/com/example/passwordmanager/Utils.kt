@@ -1,8 +1,6 @@
 package com.example.passwordmanager
 
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.materialIcon
-import androidx.compose.material.icons.materialPath
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector

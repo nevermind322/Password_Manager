@@ -1,9 +1,6 @@
 package com.example.passwordmanager.vm
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
-import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.passwordmanager.CryptoManager
@@ -46,7 +43,6 @@ class SignupViewModel : ViewModel() {
 
 sealed class SignupUIState {
     data object Start : SignupUIState()
-    data object Loading : SignupUIState()
     data object PasswordNotValid : SignupUIState()
     data object Success : SignupUIState()
 }

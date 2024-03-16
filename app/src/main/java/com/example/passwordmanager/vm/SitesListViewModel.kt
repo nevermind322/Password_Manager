@@ -4,11 +4,9 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.security.crypto.EncryptedSharedPreferences
 import com.example.passwordmanager.model.SiteWithPassword
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.util.prefs.Preferences
 
 class SitesListViewModel : ViewModel() {
 
