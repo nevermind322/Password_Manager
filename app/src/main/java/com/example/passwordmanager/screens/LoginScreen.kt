@@ -1,8 +1,11 @@
 package com.example.passwordmanager.screens
 
-import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
@@ -14,11 +17,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.example.passwordmanager.Biometrics
 import com.example.passwordmanager.CryptoManager
+import com.example.passwordmanager.getHashString
 
 
 @Composable
@@ -28,19 +34,37 @@ fun LoginScreen(onLogin: () -> Unit) {
 
     val hash = CryptoManager.getPasswordHash(LocalContext.current.applicationContext)
 
+    val context = LocalContext.current
+
     if (hash == null) {
         SignupScreen(onSignup = onLogin)
     } else
-        Column {
-            TextField(value = password, onValueChange = { password = it })
-            Button(onClick = {
-                if (hash == getHashString(password))
-                    onLogin()
-            }) { Text(text = "Login") }
-            BiometricAuthButton(
-                onError = { _, _ -> },
-                onSuccess = { onLogin() },
-                onFail = { /*TODO*/ })
+        Box(contentAlignment = Alignment.Center) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                PasswordField(password = password, onPasswordChange = { password = it })
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Button(onClick = {
+                        if (hash == getHashString(password))
+                            onLogin()
+                    }) { Text(text = "Login") }
+                    BiometricAuthButton(
+                        onError = { _, _ ->
+                            Toast.makeText(
+                                context,
+                                "Error, retry or use password",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        },
+                        onSuccess = { onLogin() },
+                        onFail = {
+                            Toast.makeText(
+                                context,
+                                "Error, retry or use password",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        })
+                }
+            }
         }
 }
 
@@ -66,5 +90,3 @@ fun BiometricAuthButton(
     }
 }
 
-fun getHashString(message: String): String =
-    CryptoManager.sha256(message.encodeToByteArray()).decodeToString()

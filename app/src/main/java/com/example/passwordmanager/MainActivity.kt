@@ -2,6 +2,7 @@ package com.example.passwordmanager
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.clickable
@@ -31,10 +32,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import com.example.passwordmanager.screens.AddSiteScreen
 import com.example.passwordmanager.screens.LoginScreen
@@ -60,10 +63,6 @@ class MainActivity : FragmentActivity() {
 }
 
 
-const val SITES_LIST_ROUTE = "sites_list"
-const val ADD_SITE_ROUTE = "add_site"
-
-
 @Composable
 fun App() {
 
@@ -76,20 +75,20 @@ fun App() {
 
     if (!loggedIn) {
         LoginScreen(onLogin = { loggedIn = true })
-    } else
-        Scaffold(topBar = { AppBar(navController = navController) }, floatingActionButton = {
-            if (backStackEntry?.destination?.route == SITES_LIST_ROUTE)
-                FloatingActionButton(onClick = { navController.navigate(ADD_SITE_ROUTE) }) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "add site")
-                }
-        }) {
-
-            MainNavHost(
-                navController = navController,
-                preferences = prefs,
-                modifier = Modifier.padding(it)
+    } else Scaffold(topBar = { AppBar(navController = navController) }, floatingActionButton = {
+        if (backStackEntry?.destination?.route == SITES_LIST_ROUTE) FloatingActionButton(onClick = {
+            navController.navigate(
+                ADD_SITE_ROUTE
             )
+        }) {
+            Icon(imageVector = Icons.Default.Add, contentDescription = "add site")
         }
+    }) {
+
+        MainNavHost(
+            navController = navController, preferences = prefs, modifier = Modifier.padding(it)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,20 +101,35 @@ fun AppBar(navController: NavHostController) {
     })
 }
 
+
+const val ADD_SITE_PARAM = "site"
+const val SITES_LIST_ROUTE = "sites_list"
+const val ADD_SITE_ROUTE = "add_site"
+
+
 @Composable
 fun MainNavHost(
-    navController: NavHostController,
-    preferences: SharedPreferences,
-    modifier: Modifier
+    navController: NavHostController, preferences: SharedPreferences, modifier: Modifier
 ) {
     NavHost(
         navController = navController, startDestination = SITES_LIST_ROUTE, modifier = modifier
     ) {
-        composable(ADD_SITE_ROUTE) {
-            AddSiteScreen(prefs = preferences)
+        composable(
+            "$ADD_SITE_ROUTE?$ADD_SITE_PARAM={$ADD_SITE_PARAM}", arguments = listOf(navArgument(ADD_SITE_PARAM) {
+                nullable = true
+                type = NavType.StringType
+            })
+        ) {
+            AddSiteScreen(
+                prefs = preferences,
+                onAdded = { navController.navigateUp() },
+                siteParam = it.arguments?.getString(ADD_SITE_PARAM)
+            )
         }
         composable(SITES_LIST_ROUTE) {
-            SitesListScreen(prefs = preferences)
+            SitesListScreen(
+                prefs = preferences,
+                onEdit = { navController.navigate("$ADD_SITE_ROUTE?$ADD_SITE_PARAM=$it") })
         }
     }
 }

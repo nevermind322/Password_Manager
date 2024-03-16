@@ -1,12 +1,14 @@
 package com.example.passwordmanager.vm
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.security.crypto.EncryptedSharedPreferences
 import com.example.passwordmanager.model.SiteWithPassword
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.prefs.Preferences
 
 class SitesListViewModel : ViewModel() {
 
@@ -27,7 +29,16 @@ class SitesListViewModel : ViewModel() {
         }
     }
 
+    fun deleteSite(site: String, preferences: SharedPreferences) {
+        viewModelScope.launch {
+            preferences.edit {
+                remove(site)
+            }
+            getSites(preferences)
+        }
+    }
 }
+
 
 sealed class SitesListUIState {
     data object Loading : SitesListUIState()

@@ -7,6 +7,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.passwordmanager.CryptoManager
+import com.example.passwordmanager.PASSWORD_SPECIAL_SYMBOLS
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -20,7 +21,8 @@ class SignupViewModel : ViewModel() {
             && password.contains(Regex("[0-9]"))
             && password.contains(Regex("[A-Z]"))
             && password.contains(Regex("[a-z]"))
-            && password.contains(Regex("[_&?%*]"))
+            && password.contains(Regex("[$PASSWORD_SPECIAL_SYMBOLS]"))
+            && password.matches(Regex("^([a-z]|[A-Z]|[0-9]|[$PASSWORD_SPECIAL_SYMBOLS])+$"))
 
 
     fun createMasterPassword(password: String, context: Context) {
